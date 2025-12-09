@@ -53,12 +53,12 @@ export default function Home(){
 
     return(
         <div className="container">
-            <h1>Super-Heroes</h1>
+            <h1>WikiHeroes</h1>
 
             <div className="search-box">
                 <input 
                     type="number" 
-                    placeholder="Digite um numero" 
+                    placeholder="Digite para buscar pelo ID" 
                     value={id}
                     onChange={(e) => setId(e.target.value)} 
                 />
