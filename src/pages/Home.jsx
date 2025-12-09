@@ -3,25 +3,25 @@ import Card from "../components/Card";
 import axios from "axios";
 
 export default function Home(){
-    const [characters, setCharacters] = useState([]); 
-    const [page, setPage] = useState(1);
+    const [character, setCharacter] = useState(null); 
+    const [id, setId] = useState(1); 
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
 
-    async function fetchCharacters(p){
+    async function fetchCharacters(id){
         setLoading(true);
         setErrorMsg("");
 
         try{
-            const response = await  axios.get(
-                `https://superheroapi.com/api/0950c8973c9c944301bfa557a3637529/character-id?page=${p}&limit=12`
+            const response = await axios.get(
+                `https://akabab.github.io/superhero-api/api/id/${id}.json`
             );
             //configuração para buscar os personagens na api
-            if(!response.data.items || response.data.items.length === 0){
-                setErrorMsg("Página inválida! Tente outra.");
-                setCharacters([]);
+            if(!response.data|| response.data === 0){
+                setErrorMsg("Personagem Invalido! Tente outra.");
+                setCharacter(response.data);
             }else{
-                setCharacters(response.data.items);
+                setCharacter(response.data);
             }
         }catch(error){
             setErrorMsg("Erro ao buscar personagens!")
@@ -36,9 +36,9 @@ export default function Home(){
 
             try{
                 const response = await axios.get(
-                    "https://superheroapi.com/api/0950c8973c9c944301bfa557a3637529/character-id?page=1&limit=12"
+                    "https://akabab.github.io/superhero-api/api/id/1.json"
                 );
-                setCharacters(response.data.items);
+                setCharacter(response.data);
             } catch(error){
                 setErrorMsg("Erro ao buscar personagens!");
             }
@@ -48,23 +48,19 @@ export default function Home(){
     }, []);
 
     function handleSearch(){
-        if(!page || page < 1){
-            setErrorMsg("Digite um número de página");
-            return;
-        }
-        fetchCharacters(page);
+        fetchCharacters(id);
     }
 
     return(
         <div className="container">
-            <h1>Dragon Ball Characters</h1>
+            <h1>Super-Heroes</h1>
 
             <div className="search-box">
                 <input 
                     type="number" 
-                    placeholder="Digite uma página de (1/20)" 
-                    value={page}
-                    onChange={(e) => setPage(e.target.value)} 
+                    placeholder="Digite um numero" 
+                    value={id}
+                    onChange={(e) => setId(e.target.value)} 
                 />
                 <button onClick={handleSearch}>Buscar</button>
             </div>
@@ -73,17 +69,20 @@ export default function Home(){
             {errorMsg && <p className="loading">{errorMsg}</p>}
 
             <div className="cards-grid">
-                {characters.map((char) => (
+               {character && (
                     <Card
-                        id={char.id}
-                        name={char.name}
-                        image={char.image}
-                        powerstats={char.powerstats}
-                        biography={char.biography}
-                        work={char.work}
-                        connections={char.connections}
+                        id={character.id}
+                        name={character.name}
+                        images={character.images.md}
+                        gender={character.appearance.gender}
+                        race={character.appearance.race}
+                        placeOfBirth={character.biography.placeOfBirth}
+                        firstAppearance={character.biography.firstAppearance}
+                        publisher={character.biography.publisher}
+                        alignment={character.biography.alignment}
+                        fullName={character.biography.fullName}
                     />
-                ))}
+                )}
             </div>
         </div>
     );
